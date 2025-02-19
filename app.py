@@ -3249,14 +3249,12 @@
 
 
 
-
-
 from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
 import os
-import qrcode  # Import the qrcode library
+import qrcode
 
-app = Flask(__name__, static_folder='static') # Fixed _name_
+app = Flask(__name__, static_folder='static')
 
 # Database configuration (replace with your actual credentials)
 db_config = {
@@ -3280,12 +3278,8 @@ def register_store():
     error = None
     if request.method == 'POST':
         store_name = request.form.get('store_name')
-        password = request.form.get('password')  # Get password from the form
         if not store_name:
             error = "Store name is required"
-            return render_template('register_store.html', error=error)
-        if not password:
-            error = "Password is required"
             return render_template('register_store.html', error=error)
 
         conn = connect_db()
@@ -3301,8 +3295,8 @@ def register_store():
                     error = "Store already exists!"
                     return render_template('register_store.html', error=error)
 
-                sql = "INSERT INTO stores (store_name, password) VALUES (%s, %s)"  # Store password too
-                cursor.execute(sql, (store_name, password))
+                sql = "INSERT INTO stores (store_name) VALUES (%s)"
+                cursor.execute(sql, (store_name,))
                 conn.commit()
                 store_id = cursor.lastrowid  # Get the store ID
 
@@ -3350,31 +3344,54 @@ def register_store():
 def login():
     error = None
     qr_code_path = None
+    store_id_for_qr = None
+    stores = []  # List to hold store information for the dropdown
+
+    conn = connect_db()
+    if not conn:
+        error = "Failed to connect to the database"
+        return render_template('login.html', error=error, stores=stores)
+
+    cursor = conn.cursor()
+
+    # Fetch all stores for the dropdown
+    sql = "SELECT id, store_name FROM stores"
+    cursor.execute(sql)
+    stores = cursor.fetchall()
 
     if request.method == 'POST':
         store_id = request.form.get('store_id')  # Get store ID from the form
-        password = request.form.get('password')  # Get the password
+        password = request.form.get('password')
 
-        conn = connect_db()
-        if conn:
-            cursor = conn.cursor()
-            sql = "SELECT * FROM stores WHERE id = %s AND password = %s"  # Check password
-            cursor.execute(sql, (store_id, password))
-            store = cursor.fetchone()  # Get store details
+        # Validate if store_id and password are correct
+        sql = "SELECT * FROM stores WHERE id = %s AND password = %s"  # Assuming you have a password field in stores
+        cursor.execute(sql, (store_id, password))
+        store = cursor.fetchone()
 
+        if store:
             cursor.close()
             conn.close()
-
-            if store:
-                # Login successful, redirect to dashboard
-                return redirect(url_for('dashboard', store_id=store_id))
-            else:
-                # Login failed
-                error = "Incorrect store ID or password. Please try again."  # Display error
+            return redirect(url_for('dashboard', store_id=store_id))
         else:
-             error = "Failed to connect to the database."
+            error = "Invalid store ID or password"
 
-    return render_template('login.html', error=error, qr_code_path=qr_code_path)
+    # Retrieve QR code path for selected store
+    selected_store_id = request.args.get('store_id')  # From query parameters (after dropdown selection)
+
+    if selected_store_id:
+        sql = "SELECT id, qr_code_path FROM stores WHERE id = %s"
+        cursor.execute(sql, (selected_store_id,))
+        store = cursor.fetchone()
+        if store:
+            qr_code_path = store[1]
+            store_id_for_qr = store[0]
+        else:
+            error = "Store not found"
+
+    cursor.close()
+    conn.close()
+    return render_template('login.html', error=error, qr_code_path=qr_code_path,
+                           store_id_for_qr=store_id_for_qr, stores=stores, selected_store_id=selected_store_id)
 
 @app.route('/logout')
 def logout():
@@ -3517,5 +3534,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-

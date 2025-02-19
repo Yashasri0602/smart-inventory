@@ -404,7 +404,7 @@
 
 
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <title>Login</title>
@@ -430,5 +430,63 @@
     {% else %}
         <p>No QR code available for this store.</p>
     {% endif %}
+</body> -->
+<!-- </html> -->
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <!-- Store Selection Dropdown -->
+    <form method="GET" action="/login">
+        <label for="store_id">Select Store:</label>
+        <select name="store_id" id="store_id" onchange="this.form.submit()">
+            <option value="">-- Select Store --</option>
+            {% for store in stores %}
+                <option value="{{ store[0] }}" {% if store[0] == selected_store_id|int %}selected{% endif %}>
+                    {{ store[1] }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if qr_code_path %}
+        <h2>Scan QR Code to Login</h2>
+        <img src="{{ url_for('static', filename=qr_code_path) }}" alt="QR Code" width="200">
+        <p>Scan the QR code above to directly access your dashboard.</p>
+
+        <!-- Hidden input field to store the store_id associated with the QR code -->
+        {% if store_id_for_qr %}
+            <input type="hidden" id="qr_store_id" value="{{ store_id_for_qr }}">
+        {% endif %}
+    {% endif %}
+
+    <!-- Login Form (for Store ID and Password) -->
+    <h2>Login with Store ID and Password</h2>
+    <form method="POST" action="/login">
+        <label for="store_id">Store ID:</label>
+        <input type="text" name="store_id" id="store_id" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="/register_store">Register</a></p>
 </body>
 </html>
