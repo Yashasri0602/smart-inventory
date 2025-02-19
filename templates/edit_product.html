@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Product</title>
+</head>
+<body>
+    <h1>Edit Product</h1>
+    <form method="post" action="/edit_product/{{ product[0] }}">
+        <label for="product_name">Product Name:</label>
+        <input type="text" name="product_name" id="product_name" value="{{ product[2] }}" required><br><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" id="quantity" value="{{ product[3] }}" required><br><br>
+
+        <label for="low_stock_threshold">Low Stock Threshold:</label>
+        <input type="number" name="low_stock_threshold" id="low_stock_threshold" value="{{ product[4] }}" required><br><br>
+
+        <label for="product_code">Product Code (Optional):</label>
+        <input type="text" name="product_code" id="product_code" value="{{ product[5] }}"><br><br>
+
+        <button type="submit">Update Product</button>
+    </form>
+    <a href="/view_products/{{ store_id }}">Back to Product List</a>
+</body>
+</html>

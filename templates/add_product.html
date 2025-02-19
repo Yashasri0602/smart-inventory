@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Product</title>
+</head>
+<body>
+    <h1>Add New Product</h1>
+    <form method="post" action="/add_product/{{ store_id }}">
+        <label for="product_name">Product Name:</label>
+        <input type="text" name="product_name" id="product_name" required><br><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" id="quantity" required><br><br>
+
+        <label for="low_stock_threshold">Low Stock Threshold:</label>
+        <input type="number" name="low_stock_threshold" id="low_stock_threshold" required><br><br>
+
+        <label for="product_code">Product Code (Optional):</label>
+        <input type="text" name="product_code" id="product_code"><br><br>
+
+        <button type="submit">Add Product</button>
+    </form>
+    <a href="/dashboard/{{ store_id }}">Back to Dashboard</a>
+</body>
+</html>

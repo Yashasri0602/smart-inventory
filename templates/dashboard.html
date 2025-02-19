@@ -1,0 +1,26 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Dashboard!</h1>
+    <p>Your Store Id is {{ store_id }}</p>
+    <a href = "/">Logout</a>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Dashboard!</h1>
+    <p>Your Store ID is {{ store_id }}</p>
+    <a href="/add_product/{{ store_id }}">Add Product</a>
+    <a href="/view_products/{{ store_id }}">View Products</a>
+    <a href="/">Logout</a>
+</body>
+</html>
